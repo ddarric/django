@@ -1,0 +1,13 @@
+#Hide files from git
+touch .gitignore
+vi .gitignore
+    venv
+    *.pyc
+
+#To untrack a single file that has been initialized to gti repository:
+git rm --cached filename
+
+#To untrack every file that is now in .gitignore:
+git rm -r --cached .
+git add .
+git commit -m ".gitignore is now working"
