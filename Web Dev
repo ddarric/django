@@ -1,0 +1,147 @@
+************************************************************************
+*******************************CORS*************************************
+************************************************************************
+
+***********************SAME ORIGIN POLICY*******************************
+-The same-origin policy is a critical security mechanism (in the browser) 
+that restricts how a document or script loaded from one origin can interact 
+with a resource from another origin. 
+-Javascript or (XHR) code from one domain cannot access ressources from another domain.
+
+- html "form" elements are not subject to the same origin policy since javascript
+won't be able to access the response of a GET or POST posted cross origin via a form.
+
+********************************CORS************************************
+-CORS (Cross-Origin Resource Sharing) is a system, consisting of transmitting 
+HTTP headers, that determines whether browsers block frontend JavaScript code 
+from accessing responses for cross-origin requests.
+
+-The same-origin security policy forbids cross-origin access to resources. But 
+CORS gives web servers the ability to say they want to opt into allowing 
+cross-origin access to their resources.
+
+- A CORS request is defined as a request that is made cross domain.
+  ex: from A.com to B.com
+
+- To enable CORS the Acess-Control-Allow-Origin http header has to be set on the server.
+
+- Origin is:
+    Protocol/Scheme : (Http/https)
+    Host : The server/domain name
+    Port number : The numeric value
+
+
+-Header Exchange(CORS AND NO CORS):
+    -Request URL:
+        http://localhost:8080/openapi101/persons
+
+    -Response Header:
+        HTTP/1.0 200 OK
+        Content-Type: application/json
+        !!!!! CORS !!!!!    : http://0.0.0.0:8080 !!!!! CORS !!!!!
+        Content-Length: 264
+        Server: Werkzeug/0.15.5 Python/3.5.2
+        Date: Tue, 27 Aug 2019 08:55:08 GMT
+
+    -Request Headers:
+        Host: localhost:8080 //Where the request is going to
+        User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:68.0) Gecko/20100101 Firefox/68.0
+        Accept: application/json
+        Accept-Language: en-US,en;q=0.5
+        Accept-Encoding: gzip, deflate
+        Referer: http://0.0.0.0:8080/openapi101/ui/
+        Origin: http://0.0.0.0:8080 //Where the request is coming from
+        Connection: keep-alive
+
+******************************PREFLIGHT**********************************
+-A CORS preflight request is a CORS request that checks to see if the CORS 
+protocol is understood and a server is aware using specific methods and 
+headers.
+
+-It is an OPTIONS request, using three HTTP request headers: 
+ 1-Access-Control-Request-Method 
+ 2-Access-Control-Request-Headers
+ 3-Origin header.
+
+- Preflight request simulator: curl -X OPTIONS http://bs-iad/mdb/v1/ -i
+
+- To avoid sending preflight request: 
+  1- Make sure your CORS request is "simple" : (https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
+  2- Set a cache for the OPTIONS check: you can set a Access-Control-Max-Age 
+    for the OPTIONS request, so that it will not check the permission again until it is expired.
+**********************************CSRF**********************************
+-Cross Site Request forgery is done by submitting a form from one origin to the 
+other using the browser session (and hence cookies).
+
+-For this to work there has to be a form similar to the one evilhost is mimicking
+on the mybank server --> this way the original cookie is sent in the post request
+and it can be fullfilled.
+    
+    //Some code in http://evilhost:8080
+    <form action="http://mybank:5000/" method="POST">
+      <input type="hidden" name="amount" value="1000"/>
+      <input type="hidden" name="to" value="Mr.Evil"/>
+      <input type="submit" value="Submit">
+    </form>
+    document.forms[0].submit();
+
+-Since forms are not subject to same origin policy this request can be fullfilled
+if the user is logged into mybank when this piece of code runs.
+
+-It would not be possible to do that with an XHR request because, the equivalent XHR code
+would not have access to the cookie. And if the attacker tries to retrieve the cookie
+with an XHR request he will be unsucessful due to the same origine policy.
+
+
+-To protect a website against CSRF attacks: 
+ 1- Use the traditionally recommended Synchronizer Token Pattern. This involves creating a 
+    random, unpredictable token (in addition to the session token held in the cookie) and 
+    storing this server-side as a session variable. When a POST is made, this anti-CSRF token 
+    is also sent, but using any mechanism apart from cookies.
+ 
+ 2- Include a custom header, such as X-Requested-With:
+    - Set the custom header in every AJAX request that changes server-side state of the 
+      application. e.g. X-Requested-With: XmlHttpRequest.
+    - In each server-side method handler, ensure a CSRF check function is called.
+    - The CSRF function examines the HTTP request and checks that X-Requested-With: XmlHttpRequest is present as a header.
+    - If it is, it is allowed. If it isn’t, send an HTTP 403 response and log this server-side.
+    
+    !!!!! This solution works because trying to add this header from another origin will trigger a pre-flight request !!!!!
+    !!!!! and if the server does not set "Access-Control-Allow-Headers: x-requested-with" then it will discard the request !!!!!
+    !!!!! and if the header is not included than the CSRF function in our server Code will discard the request !!!!!
+    !!!!! So the only way to change the server state is to send a request from the same origin with the "x-requested-with" header !!!!!
+
+************************************************************************
+*******************************MVC**************************************
+************************************************************************
+
+1- A user requests to view a page by entering a URL.
+2- The application matches the URL to a predefined route.
+3- The controller action associated with the route is called.
+4- The controller action uses the models to retrieve all of the necessary data 
+   from a database, places the data in an array, and loads a view, passing along 
+   the data structure.
+5- The view accesses the structure of data and uses it to render the requested 
+   page, which is then presented to the user in their browser.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

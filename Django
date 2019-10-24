@@ -1,0 +1,168 @@
+#Setup and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+#Install Django
+pip install Django
+
+#Move up one directory
+$ mv personal_portfolio/manage.py ./
+$ mv personal_portfolio/personal_portfolio/* personal_portfolio
+$ rm -r personal_portfolio/personal_portfolio/
+
+#Create an app
+    python manage.py startapp hello_world
+
+    go to rp-portfolio/settings.py
+    INSTALLED_APPS +=['hello_world']
+
+    go to rp-portfolio/urls.py
+    urlpatterns += [path('', include('hello_world.urls'))]
+
+#Delete an app
+    rm - r hello_world
+
+    go to rp-portfolio/settings.py
+    INSTALLED_APPS -=['hello_world']
+
+    go to rp-portfolio/urls.py
+    urlpatterns -= [path('', include('hello_world.urls'))]
+
+#Run the server
+python manage.py runserver
+
+************************************************************************
+*********************************MODELS*********************************
+************************************************************************
+- When you’re using an ORM, the classes you build that represent database tables 
+  are referred to as models. In Django, they live in the models.py module of each 
+  Django app.
+
+#Create a new model in projects/models.py:
+    from django.db import models
+    # Create your models here.
+    class Project(models.Model):
+        title = models.CharField(max_length=100)
+        description = models.TextField()
+        technology = models.CharField(max_length=20)
+        image = models.FilePathField(path="/img")
+
+- To start the process of creating our database, we need to create a migration. 
+  A migration is a file containing a Migration class with rules that tell Django 
+  what changes need to be made to the database. 
+
+#Create a migration file
+python manage.py makemigrations projects
+
+- Now that you’ve create a migration file, you need to apply the migrations set 
+out in the migrations file and create your database using the migrate command:
+#Create database
+python manage.py migrate projects
+#If we don't specify the app (here projects) Django creates the User model for us too
+python manage.py migrate
+
+#To access the Django shell
+python manage.py shell
+
+#Create new entries in the SQLite Database using the Django shell
+python manage.py shell
+>>>from projects.models import Project
+>>>p1 = Project(title='My First Project',description='A web development project.',technology='Django',image='img/project1.png')
+>>>p1.save()
+
+************************************************************************
+*********************************VIEWS**********************************
+************************************************************************
+- Now you’ve created the projects to display on your portfolio site, you’ll 
+  need to create view functions to send the data from the database to the HTML 
+  templates.
+
+#View functions are needed to send data from database to View.
+#In the folder projects/views.py:
+    from django.shortcuts import render
+    #Import the model we are gonna Query
+    from projects.models import Project
+    def project_index(request):
+        #Retrieve all objects in the projects table
+        projects = Project.objects.all()
+        #dictionary entry context to which we assign the Queryset.
+        context = {
+
+            'projects': projects
+        }
+        #context is added as an argument to render(). Any entries in the context
+        #dictionary are available in the template as long as the context argument is 
+        #passed to render(). 
+        return render(request, 'project_index.html', context)
+        #We finally render a template named project_index.html
+
+#Hook view function to a URL, create projects/urls.py
+    from django.urls import path
+    from . import views
+    
+    urlpatterns = [
+        path("", views.project_index, name="project_index"),
+        path("<int:pk>/", views.project_detail, name="project_detail"),
+    ]
+
+#We need to hook these URL to the overall project URL, In personal_portfolio/urls.py
+urlpatterns += [path("projects/", include("projects.urls")),]
+
+************************************************************************
+******************************TEMPLATES*********************************
+************************************************************************
+    #Extend base.html from project root
+    {% extends "base.html" %}
+    #Include static files such as images (image defined in the Project Model)
+    #is stored at a filepath, which should be the static/ directory 
+    {% load static %}
+    {% block page_content %}
+    <h1>Projects</h1>
+    <div class="row">
+    #!!!! Loop over all objects passed in by the context dictionary !!!!#
+    {% for project in projects %}
+        <div class="col-md-4">
+            <div class="card mb-2">
+                #Include image
+                <img class="card-img-top" src="{% static project.image %}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ project.title }}</h5>
+                    <p class="card-text">{{ project.description }}</p>
+                    <a href="{% url 'project_detail' project.pk %}"
+                       class="btn btn-primary">
+                        Read More
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endblock %}
+
+************************************************************************
+********************************ADMIN***********************************
+************************************************************************
+#If we don't specify the app (here projects) Django creates the User model for us too
+python manage.py migrate
+
+#Before you can access the admin, you need to add yourself as a superuser
+python manage.py createsuperuser
+
+#Got to:
+localhost:8000/admin
+
+#The user and groups models should appear, we need to register our defined model
+#inside the admin in the blogs/admin.py file add:
+    
+    from django.contrib import admin
+    from blog.models import Post, Category
+    
+    class PostAdmin(admin.ModelAdmin):
+        pass
+
+    class CategoryAdmin(admin.ModelAdmin):
+        pass
+
+    admin.site.register(Post, PostAdmin)
+    admin.site.register(Category, CategoryAdmin)
+
