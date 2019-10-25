@@ -166,3 +166,4 @@ localhost:8000/admin
     admin.site.register(Post, PostAdmin)
     admin.site.register(Category, CategoryAdmin)
 
+#Get username

@@ -1,0 +1,83 @@
+************************************************************************
+*********************************Django*********************************
+************************************************************************
+
+*****************************Relationships******************************
+
+- Many-to-one:
+    from django.db import models
+    class Manufacturer(models.Model):
+        # ...
+        pass
+    class Car(models.Model):
+        #Include a foreign key as an attribute to the model
+        #This will create a manufacturer_id field in the car table, since each car
+        #can have one manufacturer
+        #on_delete=models.CASCADE --> if manufacturer is deleted from the manufacturers
+        #table delete all cars from that manufacturer in the Car table
+        manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)
+    
+- Many-to-many:
+    from django.db import models
+    class Topping(models.Model):
+        # ...
+        pass
+    class Pizza(models.Model):
+        #Topping can be on multiple pizzas and pizza can have multiple toppings
+        #It doesn’t matter which model has the ManyToManyField, but you should only put it in one of them.
+        #Generally, ManyToManyField instances should go in the object that’s going to be edited on a form.
+        #It is more natural to think of a pizza with multiple toppings and not the other way around.
+        toppings = models.ManyToManyField(Topping)
+        #This will create a third table that has fields pizza_id, topping_id in the
+        #database.
+
+- Many-to-many with through:
+  - Sometimes we may need to associate data to a many -to-many relationship
+    (have more than just the  pizza_id and topping_id field in the created table)
+  - Django allows you to specify the model that will be used to govern the many-to-many relationship.
+  - You can then put extra fields on the intermediate model. The intermediate model is associated with
+    the ManyToManyField using the through argument
+        
+        from django.db import models
+        class Person(models.Model):
+            name = models.CharField(max_length=128)
+
+            def __str__(self):
+                return self.name
+
+        class Group(models.Model):
+            name = models.CharField(max_length=128)
+            members = models.ManyToManyField(Person, through='Membership')
+            def __str__(self):
+                return self.name
+
+        class Membership(models.Model):
+            #Explicitly specify foreigh keys on the models that are involved in
+            #the many to many relationship.
+            person = models.ForeignKey(Person, on_delete=models.CASCADE)
+            #Our intermediate model must contain one - and only one - foreign 
+            #key to the source and target models (here Group and Person). 
+            group = models.ForeignKey(Group, on_delete=models.CASCADE)
+            date_joined = models.DateField()
+            invite_reason = models.CharField(max_length=64)
+
+- One-to-one:
+  - This is most useful on the primary key of an object when that object “extends” another object in some way.
+  - If we build a database of places then wanna build a restaurant database, instead
+    of repeating yourself you can make Restaurant ahve a OneToOneField with Place (can also
+    use inheritance)  
+
+        from django.db import models
+        class Place(models.Model):
+            name = models.CharField(max_length=50)
+            address = models.CharField(max_length=80)
+
+        class Restaurant(models.Model):
+            place = models.OneToOneField(
+                Place,
+                on_delete=models.CASCADE,
+                primary_key=True,
+            )
+            serves_hot_dogs = models.BooleanField(default=False)
+            serves_pizza = models.BooleanField(default=False)
+
