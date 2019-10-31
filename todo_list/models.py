@@ -4,4 +4,4 @@ from django.db import models
 class Task(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
-    end_date = models.CharField(max_length=20)
+    end_date = models.DateField()
