@@ -29,4 +29,3 @@ class NewTaskForm(forms.Form):
                 '%d %B %Y', '%d %B, %Y',            # '25 October 2006', '25 October, 2006'
         )
     )
-    

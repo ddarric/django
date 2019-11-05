@@ -19,24 +19,32 @@ def main_page(request):
     else:
         form = NewTaskForm()
     tasks = Task.objects.all()
-    return render(request, 'main_page.html', {'form': form, 'tasks': tasks})
+    return render(request, 'main_page.html', {'form': form, 'tasks': tasks, 'start': -tasks.first().id + 1})
 
 def task_details(request, pk):
     task = Task.objects.filter(pk = pk)
     if request.method == 'POST':
         form = NewTaskForm(request.POST)
         if form.is_valid():
-            #if title/ description/ end_date
+            #print(form.cleaned_data['end_date'])
+            #print(type(form.cleaned_data['end_date']))
             task.update(title = form.cleaned_data['title'])
             task.update(description = form.cleaned_data['description'])
             task.update(end_date = form.cleaned_data['end_date'])
             return redirect('main_page')
     else:
-        form = NewTaskForm()
-    return render(request, 'task_details.html', {'form': form, 'task': task[0]})
+        #print(task, type(task))
+        task = task.first()
+        #print(task, type(task))
+        form = NewTaskForm(initial = {
+            'title': task.title,
+            'description': task.description,
+            'end_date': task.end_date
+        })
+    return render(request, 'task_details.html', {'form': form, 'task': task})
 
 def delete_task(request, pk):
-    #if request.method == 'POST':
+    if request.method == 'POST':
     #print(type(Task.objects.filter(pk = pk)[0]))
-    Task.objects.filter(pk = pk).delete()
-    return redirect('main_page')
+        Task.objects.filter(pk = pk).delete()
+        return redirect('main_page')

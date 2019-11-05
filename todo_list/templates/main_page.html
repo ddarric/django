@@ -2,17 +2,17 @@
 
 {% block page_content %}
 <div class="col-md-8 offset-md-2">
-    <h2>Your To-Do List</h2>
+    <h3>Your To-Do List</h3>
     {% if tasks %}
         {% for task in tasks %}
             <a href = "{% url 'task_details' task.pk %}" class = "p-1 bg-primary text-white">Task Details/Edit Task</a>
             <a href = "{% url 'delete_task' task.pk %}" class = "p-1 bg-primary text-white">Delete Task</a> 
-            <p>{{ task.title }} due on {{ task.end_date }}</p>
+            <p>{{ task.pk|add:start }}, {{ task.title }} due on {{ task.end_date }}</p>
         {% endfor %}
     {% else %}
-    <h1>No tasks to display</h1>
+    <h3>No tasks to display</h3>
     {% endif %}
-    <h2>Insert New Task</h2>
+    <h3>Insert New Task</h3>
     <form method = "POST">
         {% csrf_token %}
         {{ form }}
