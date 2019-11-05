@@ -4,11 +4,27 @@
 <div class="col-md-8 offset-md-2">
     <h3>Your To-Do List</h3>
     {% if tasks %}
+        <table>
         {% for task in tasks %}
-            <a href = "{% url 'task_details' task.pk %}" class = "p-1 bg-primary text-white">Task Details/Edit Task</a>
-            <a href = "{% url 'delete_task' task.pk %}" class = "p-1 bg-primary text-white">Delete Task</a> 
-            <p>{{ task.pk|add:start }}, {{ task.title }} due on {{ task.end_date }}</p>
+            <tr>
+                <td>
+                    {{ task.pk|add:start }} 
+                </td>
+                <td>
+                    <a href = "{% url 'task_details' task.pk %}" class = "p-1 bg-primary text-white">Task Details/Edit Task</a>
+                </td>
+                <td>
+                    <form action = "{% url 'delete_task' task.pk %}" method = "POST">
+                        {% csrf_token %}
+                        <input type = "submit" class = "p-1 bg-primary text-white" value = "Delete Item">
+                    </form>
+                </td>
+                <td>
+                    <p>{{ task.title }} due on {{ task.end_date }}</p>
+                </td>
+            </tr>
         {% endfor %}
+        </table>
     {% else %}
     <h3>No tasks to display</h3>
     {% endif %}
