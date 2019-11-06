@@ -1,26 +1,44 @@
-{% extends "base.html"%}
-
-{% block page_content %}
+{% extends "base_todo_list.html"%}
+{% block page_content_todo_list %}
 <div class="col-md-8 offset-md-2">
     <h3>Your To-Do List</h3>
     {% if tasks %}
-        <table>
+        <table class = "table">
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Title
+                </th>
+                <th>
+                    Due
+                </th> 
+                <th>
+                </th>
+                <th>
+                </th>                 
+            </tr>
+
         {% for task in tasks %}
             <tr>
                 <td>
-                    {{ task.pk|add:start }} 
+                    {{ forloop.counter }} 
                 </td>
                 <td>
-                    <a href = "{% url 'task_details' task.pk %}" class = "p-1 bg-primary text-white">Task Details/Edit Task</a>
+                    {{ task.title }}
+                </td>
+                <td>
+                    {{ task.end_date }}
+                </td>
+                <td>
+                    <a href = "{% url 'task_details' task.pk %}" class = "btn btn-primary">Details/Edit</a>
                 </td>
                 <td>
                     <form action = "{% url 'delete_task' task.pk %}" method = "POST">
                         {% csrf_token %}
-                        <input type = "submit" class = "p-1 bg-primary text-white" value = "Delete Item">
+                        <button type = "submit" class = "btn btn-primary">Delete</button>
                     </form>
-                </td>
-                <td>
-                    <p>{{ task.title }} due on {{ task.end_date }}</p>
                 </td>
             </tr>
         {% endfor %}
@@ -35,4 +53,4 @@
         <button type = "submit">Submit</button>
     </form>
 </div>
-{% endblock %}
+{% endblock page_content_todo_list %}

@@ -19,7 +19,7 @@ def main_page(request):
     else:
         form = NewTaskForm()
     tasks = Task.objects.all()
-    return render(request, 'main_page.html', {'form': form, 'tasks': tasks, 'start': -tasks.first().id + 1 if tasks.first() else 0})
+    return render(request, 'main_page.html', {'form': form, 'tasks': tasks, 'start': 0})
 
 def task_details(request, pk):
     task = Task.objects.filter(pk = pk)

@@ -21,7 +21,11 @@ class NewTaskForm(forms.Form):
     )
 
     end_date = forms.DateField(
-        widget=forms.DateInput(format='%m/%d/%Y'),
+        widget = forms.DateInput(
+            attrs = {
+                "placeholder" : "dd-mm-yy"
+            }
+        ),
         input_formats = (
                 '%Y-%d-%m', '%d/%m/%Y', '%d/%m/%y', # '2006-25-10', '25/10/2006', '25/10/06' 
                 '%d-%m-%Y','%d-%m-%y',              # '25-10-2006', '25-10-06'
