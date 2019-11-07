@@ -19,7 +19,7 @@ def main_page(request):
     else:
         form = NewTaskForm()
     tasks = Task.objects.all()
-    return render(request, 'main_page.html', {'form': form, 'tasks': tasks, 'start': 0})
+    return render(request, 'main_page.html', {'form': form, 'tasks': tasks})
 
 def task_details(request, pk):
     task = Task.objects.filter(pk = pk)
@@ -47,3 +47,5 @@ def delete_task(request, pk):
     if request.method == 'POST':
         Task.objects.filter(pk = pk).delete()
         return redirect('main_page')
+
+
