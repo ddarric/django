@@ -153,6 +153,13 @@ urlpatterns += [path("projects/", include("projects.urls")),]
     </div>
     {% endblock %}
 
+- In line 1, {% extends "base.html" %} tells Django template engine that the current
+  template is a child template and inherits from base.html. This must be the first 
+  line in the child template otherwise it won’t work. When template engine encounters
+  this line it immediately loads the parent template (i.e base.html) and then 
+  replaces the blocks of content in parent template with the blocks of content of 
+  the same name defined in the child template
+
 ************************************************************************
 ********************************ADMIN***********************************
 ************************************************************************
