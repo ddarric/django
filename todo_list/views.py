@@ -26,16 +26,12 @@ def task_details(request, pk):
     if request.method == 'POST':
         form = NewTaskForm(request.POST)
         if form.is_valid():
-            #print(form.cleaned_data['end_date'])
-            #print(type(form.cleaned_data['end_date']))
             task.update(title = form.cleaned_data['title'])
             task.update(description = form.cleaned_data['description'])
             task.update(end_date = form.cleaned_data['end_date'])
-            return redirect('main_page')
+            return redirect('todo_list:main_page')
     else:
-        #print(task, type(task))
         task = task.first()
-        #print(task, type(task))
         form = NewTaskForm(initial = {
             'title': task.title,
             'description': task.description,
@@ -46,6 +42,6 @@ def task_details(request, pk):
 def delete_task(request, pk):
     if request.method == 'POST':
         Task.objects.filter(pk = pk).delete()
-        return redirect('main_page')
+        return redirect('todo_list:main_page')
 
 

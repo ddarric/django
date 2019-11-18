@@ -32,10 +32,10 @@
                     {{ task.end_date }}
                 </td>
                 <td>
-                    <a href = "{% url 'task_details' task.pk %}" class = "btn btn-primary">Details/Edit</a>
+                    <a href = "{% url 'todo_list:task_details' task.pk %}" class = "btn btn-primary">Details/Edit</a>
                 </td>
                 <td>
-                    <form action = "{% url 'delete_task' task.pk %}" method = "POST">
+                    <form action = "{% url 'todo_list:delete_task' task.pk %}" method = "POST">
                         {% csrf_token %}
                         <button type = "submit" class = "btn btn-primary">Delete</button>
                     </form>
