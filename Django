@@ -209,3 +209,43 @@ localhost:8000/admin
     - The form is valid, and the user is redirected to the next page.
     - The form is invalid, and empty form is once again displayed. The user is 
       back at step 1, and the process repeats.
+
+************************************************************************
+*********************************TESTS**********************************
+************************************************************************
+#To run all tests
+python3 manage.py test
+
+#More verbosity
+python3 manage.py test --verbosity 2
+
+# Run the specified module
+python3 manage.py test catalog.tests
+
+# Run the specified module
+python3 manage.py test catalog.tests.test_models
+
+# Run the specified class
+python3 manage.py test catalog.tests.test_models.YourTestClass
+
+    class YourTestClass(TestCase):
+        @classmethod
+        def setUpTestData(cls):
+            print("setUpTestData: Run once to set up non-modified data for all class methods.")
+            pass
+
+        def setUp(self):
+            print("setUp: Run once for every test method to setup clean data.")
+            pass
+
+        def test_false_is_false(self):
+            print("Method: test_false_is_false.")
+            self.assertFalse(False)
+
+        def test_false_is_true(self):
+            print("Method: test_false_is_true.")
+            self.assertTrue(False)
+
+        def test_one_plus_one_equals_two(self):
+            print("Method: test_one_plus_one_equals_two.")
+            self.assertEqual(1 + 1, 2)
